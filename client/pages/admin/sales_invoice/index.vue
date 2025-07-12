@@ -100,6 +100,11 @@
                                                         d="M17.414 2.586a2 2 0 00-2.828 0l-10 10V16a1 1 0 001 1h3.414l10-10a2 2 0 000-2.828l-1.586-1.586zM5 13l-1.5 1.5V13h1.5zm4.5-4.5L14 4l2 2-4.5 4.5H9.5V8.5z" />
                                                 </svg>
                                             </button>
+                                            <button @click="printInvoice(invoices)" class="text-blue-600 hover:text-blue-900" title="Imprimir Factura">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14H4v-3h1v3zm2 2v-4h6v4H7zm8-2h1v-3h-1v3z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
                                             <button @click="" class="text-red-600 hover:text-red-900">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                                                     viewBox="0 0 20 20" fill="currentColor">
@@ -116,15 +121,18 @@
                     </div>
                     <Pagination :data="state.salesInvoices" @previous="previous" @next="next" />
                 </div>
+
+
             </main>
         </NuxtLayout>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { PlusIcon } from '@heroicons/vue/24/outline';
+import { ref, reactive, onMounted } from 'vue';
 import { salesInvoiceService } from '~/components/api/admin/SalesInvoiceService';
+import type { Error } from '@/types/error';
+import { PlusIcon } from '@heroicons/vue/24/outline';
 
 const runtimeConfig = useRuntimeConfig();
 let currentTablePage = 1;
@@ -134,30 +142,9 @@ interface SortData {
     sortOrder: "ascend" | "descend" | null;
 }
 
-interface SalesInvoice {
+interface SalesInvoices {
     data: any[];
 }
-
-// const salesInvoice = ref({
-//     id: '',
-//     branch_id: '',
-//     sales_order_id: '',
-//     customer_id: '',
-//     prepared_by_id: '',
-//     sales_representative: '',
-//     cancelled_by_id: '',
-//     approved_by_id: '',
-//     invoice_no: '',
-//     document_no: '',
-//     date: '',
-//     due_date: '',
-//     payment_type: 'Cash',
-//     terms: '0',
-//     is_cancelled: false,
-//     is_approved: false,
-//     remarks: '',
-//     total: '',
-// });
 
 const state = reactive({
     columnHeaders: [
@@ -165,24 +152,23 @@ const state = reactive({
         { name: "Document No", sorter: true, key: "document_no" },
         { name: "Prepared By", sorter: true, key: "prepared_by_id" },
         { name: "Customer", sorter: true, key: "customer_id" },
-        { name: "Sales Representative", sorter: true, key: "sales_representative" },
+        { name: "Sales Rep", sorter: true, key: "sales_representative" },
         { name: "Date", sorter: true, key: "date" },
         { name: "Due Date", sorter: true, key: "due_date" },
         { name: "Terms", sorter: true, key: "terms" },
         { name: "Amount", sorter: true, key: "amount" },
         { name: "Cancelled By", sorter: true, key: "cancelled_by_id" },
         { name: "Approved By", sorter: true, key: "approved_by_id" },
-        { name: "Cancelled", sorter: true, key: "is_cancelled" },
-        { name: "Approved", sorter: true, key: "is_approved" },
+        { name: "Is Cancelled", sorter: true, key: "is_cancelled" },
+        { name: "Is Approved", sorter: true, key: "is_approved" },
         { name: "Remarks", sorter: true, key: "remarks" },
         { name: "Actions", key: "actions" },
     ],
     error: null as Error | null,
     isTableLoading: false,
     sortData: { sortField: "", sortOrder: null } as SortData,
-    salesInvoices: { data: [] } as SalesInvoice,
+    salesInvoices: { data: [] } as SalesInvoices,
 });
-
 
 function sort(sortingData: { column: string; sort: string }) {
     currentTablePage = 1;
@@ -237,6 +223,97 @@ function previous() {
 
 function next() {
     currentTablePage++;
+}
+
+// Función para imprimir factura desde la lista
+function printInvoice(invoice: any) {
+    try {
+        if (!invoice.invoice_no) {
+            alert('Error: Esta factura no tiene número de factura válido.');
+            return;
+        }
+
+        // Crear el contenido HTML para imprimir
+        const printContent = generateInvoiceListPrintContent(invoice);
+        
+        // Crear una nueva ventana para imprimir
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        
+        if (!printWindow) {
+            alert('Error: No se pudo abrir la ventana de impresión. Verifique que no esté bloqueada por el navegador.');
+            return;
+        }
+
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        
+        // Esperar a que se cargue el contenido y luego imprimir
+        printWindow.onload = () => {
+            printWindow.print();
+            printWindow.close();
+        };
+        
+    } catch (error) {
+        console.error('Error al imprimir:', error);
+        alert('Error: No se pudo imprimir la factura. Verifique la configuración de su impresora.');
+    }
+}
+
+// Función para generar el contenido HTML de la factura desde la lista
+function generateInvoiceListPrintContent(invoice: any) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Factura ${invoice.invoice_no}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .invoice-info { margin-bottom: 20px; }
+                .invoice-info div { margin: 5px 0; }
+                .total { text-align: right; font-weight: bold; margin-top: 20px; }
+                .footer { margin-top: 30px; text-align: center; font-size: 12px; }
+                .note { margin-top: 20px; padding: 10px; background-color: #f9f9f9; border-left: 4px solid #007bff; }
+                @media print {
+                    body { margin: 0; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>FACTURA DE VENTA</h1>
+                <h2>FlexiPOS</h2>
+            </div>
+            
+            <div class="invoice-info">
+                <div><strong>Número de Factura:</strong> ${invoice.invoice_no}</div>
+                <div><strong>Número de Documento:</strong> ${invoice.document_no || 'N/A'}</div>
+                <div><strong>Fecha:</strong> ${invoice.date}</div>
+                <div><strong>Fecha de Vencimiento:</strong> ${invoice.due_date}</div>
+                <div><strong>Cliente ID:</strong> ${invoice.customer_id}</div>
+                <div><strong>Vendedor ID:</strong> ${invoice.sales_representative}</div>
+                <div><strong>Términos:</strong> ${invoice.terms} días</div>
+                <div><strong>Estado:</strong> ${invoice.is_cancelled ? 'Cancelada' : 'Activa'}</div>
+                <div><strong>Aprobada:</strong> ${invoice.is_approved ? 'Sí' : 'No'}</div>
+                <div><strong>Observaciones:</strong> ${invoice.remarks || 'N/A'}</div>
+            </div>
+            
+            <div class="total">
+                <h3>Monto Total: $${parseFloat(invoice.amount || 0).toFixed(2)}</h3>
+            </div>
+            
+            <div class="note">
+                <p><strong>Nota:</strong> Esta es una impresión simplificada de la factura. Para obtener el detalle completo de productos, acceda a la factura desde el sistema.</p>
+            </div>
+            
+            <div class="footer">
+                <p>Gracias por su compra</p>
+                <p>Impreso el: ${new Date().toLocaleString()}</p>
+            </div>
+        </body>
+        </html>
+    `;
 }
 
 onMounted(() => {

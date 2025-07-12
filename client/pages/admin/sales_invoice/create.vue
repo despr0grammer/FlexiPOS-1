@@ -99,93 +99,66 @@
                                 <div class="w-full border-t border-gray-300" />
                             </div>
                             <div class="relative flex">
-                                <h2 class="bg-white text-lg font-semibold">SALES INVOICE DETAIL</h2>
+                                <h2 class="bg-white text-lg font-semibold">SALES DETAILS</h2>
                             </div>
                         </div>
-                        <!-- SALES INVOICE DETAIL ROWS -->
-                        <div class="flex items-center space-x-4">
-                            <div class="w-1/2">
-                                <FormLabel for="product_id" label="Product ID" />
-                                <div class="flex items-center mb-1">
-                                    <FormSelect id="product_id" v-model="salesInvoiceDetail.product_id"
-                                        :options="state.products.filter(products => products.is_active).map(products => ({ value: products.id, label: products.name }))"
-                                        placeholder="select product" />
-                                    <FormError :error="state?.error?.errors?.product_id?.[0]" />
-                                </div>
+                        <!-- Row 5 sales details -->
+                        <div class="flex items-center space-x-4 mt-8">
+                            <div class="w-1/4">
+                                <FormLabel label="Product" />
+                                <FormSelect id="product_id" v-model="salesInvoiceDetail.product_id"
+                                    :options="state.products.filter(product => product.is_active).map(product => ({ value: product.id, label: product.name }))"
+                                    placeholder="select product" required />
                             </div>
-                            <div class="w-1/2">
-                                <label class="block text-xs font-medium text-gray-700">Barcode</label>
-                                <input v-model.number="salesInvoiceDetail.barcode" type="text" placeholder="barcode"
-                                    class="block w-full bg-gray-100 mt-3 border-gray-300 rounded-md shadow-sm focus:border-gray-500 focus:ring-gray-500 text-sm p-3" />
+                            <div class="w-1/4">
+                                <FormLabel label="Quantity" />
+                                <FormNumberField for="quantity" name="quantity" v-model="salesInvoiceDetail.quantity"
+                                    placeholder="quantity" required />
                             </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <div class="w-1/2">
-                                <label class="block text-xs font-medium text-gray-700">Unit</label>
-                                <input v-model.number="salesInvoiceDetail.unit" type="text" placeholder="unit"
-                                    class="block w-full bg-gray-100 mt-3 border-gray-300 rounded-md shadow-sm focus:border-gray-500 focus:ring-gray-500 text-sm p-3" />
+                            <div class="w-1/4">
+                                <FormLabel label="Unit Price" />
+                                <FormNumberField for="unit_price" name="unit_price"
+                                    v-model="salesInvoiceDetail.unit_price" placeholder="unit price" required />
                             </div>
-                            <div class="w-1/2">
-                                <label class="block text-xs font-medium text-gray-700">Expiry Date</label>
-                                <input v-model.number="salesInvoiceDetail.expiry_date" type="text"
-                                    placeholder="expiry date"
-                                    class="block w-full bg-gray-100 mt-3 border-gray-300 rounded-md shadow-sm focus:border-gray-500 focus:ring-gray-500 text-sm p-3" />
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <div class="w-1/2">
-                                <label class="block text-xs font-medium text-gray-700">Quantity</label>
-                                <input v-model.number="salesInvoiceDetail.quantity" type="text" placeholder="quantity"
-                                    class="block w-full bg-gray-100 mt-3 border-gray-300 rounded-md shadow-sm focus:border-gray-500 focus:ring-gray-500 text-sm p-3" />
-                            </div>
-                            <div class="w-1/2">
-                                <label class="block text-xs font-medium text-gray-700">Price</label>
-                                <input v-model.number="salesInvoiceDetail.price" type="text" placeholder="price"
-                                    class="block w-full bg-gray-100 mt-3 border-gray-300 rounded-md shadow-sm focus:border-gray-500 focus:ring-gray-500 text-sm p-3" />
-                            </div>
-                        </div>
-
-                        <div class="flex items-center space-x-4">
-                            <div class="w-1/2">
-                                <FormLabel label="Total" />
-                                <FormNumberField for="prepared_by_id" name="prepared_by_id" v-model="salesInvoice.total"
-                                    placeholder="0" readonly class="block cursor-default bg-gray-200" />
-                            </div>
-                            <div class="w-1/2">
-                                <label class="block text-xs font-medium text-gray-700"></label>
+                            <div class="w-1/4 flex items-end">
                                 <button @click="addSales"
-                                    class="block mt-7 rounded-md bg-gray-900 px-6 py-3 text-xs font-semibold text-white hover:bg-gray-800">Add
+                                    class="rounded-md bg-gray-900 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-800">Add
                                     Sales</button>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Sales List Table -->
-                <div class="mt-6 overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-lg shadow-md mt-2">
-                        <thead>
-                            <tr class="text-left">
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">Product ID</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">Product Name</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">Barcode</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">unit</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">Expiry Date</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">Quantity</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900">Price</th>
-                                <th class="px-4 py-2 text-xxs font-semibold text-white bg-gray-900 rounded-tr-lg">
+                    <!-- Sales Table -->
+                    <table class="min-w-full divide-y divide-gray-300 mt-8">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Product</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Barcode</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Quantity</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Unit</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Unit Price</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Expiry Date</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Subtotal</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-gray-100">
-                            <tr v-for="(sale, index) in sales" :key="sale.sales_invoice_id" class="border-t bg-gray-50">
-                                <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.product_id }}</td>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr v-for="(sale, index) in sales" :key="index">
                                 <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.product_name }}</td>
                                 <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.barcode }}</td>
-                                <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.unit }}</td>
-                                <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.expiry_date }}</td>
                                 <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.quantity }}</td>
-                                <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.price }}</td>
+                                <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.unit }}</td>
+                                <td class="px-4 py-2 text-xxs text-gray-700">${{ sale.unit_price }}</td>
+                                <td class="px-4 py-2 text-xxs text-gray-700">{{ sale.expiry_date }}</td>
+                                <td class="px-4 py-2 text-xxs text-gray-700">${{ (sale.quantity * sale.unit_price).toFixed(2) }}</td>
                                 <td class="px-4 py-2 text-xxs text-gray-700">
                                     <div class="flex space-x-2">
                                         <button @click="editSale(index)" class="text-gray-600 hover:text-gray-900">
@@ -213,10 +186,14 @@
                         </tbody>
                     </table>
 
-                    <!-- Save and Cancel Buttons -->
+                    <!-- Save, Print and Cancel Buttons -->
                     <div class="mt-6 flex justify-end space-x-4">
                         <button @click="saveSalesInvoice"
                             class="rounded-md bg-gray-900 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-800">Save</button>
+                        <button @click="printInvoice" :disabled="!salesInvoice.invoice_no"
+                            class="rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                            Print Invoice
+                        </button>
                         <button @click="cancel"
                             class="rounded-md bg-gray-300 px-4 py-2 text-xs font-semibold text-gray-800 hover:bg-gray-400">Cancel</button>
                     </div>
@@ -249,327 +226,183 @@ const { t } = useI18n()
 
 const runtimeConfig = useRuntimeConfig();
 
-interface Customer {
-    id: string;
-    firstname: string;
-    lastname: string;
-    email: string;
-    phone: string;
-    address: string;
-    is_active: boolean;
-}
-
-interface Employee {
-    id: string;
-    firstname: string;
-    lastname: string;
-    email: string;
-    phone: string;
-    position: string;
-    is_active: boolean;
-}
-
-interface Product {
-    id: number;
-    barcode: string;
-    wholesale_unit: string;
-    name: string;
-    expiry_date: string;
-    is_active: boolean;
-}
-
-const customer = ref({
-    id: '',
-    firstname: '',
-    lastname: '',
-    email: '',
-    phone: '',
-    address: '',
-    is_active: true,
-});
-
-const employee = ref({
-    id: '',
-    firstname: '',
-    lastname: '',
-    email: '',
-    phone: '',
-    position: '',
-    is_active: true,
-});
-
 interface SalesInvoice {
-    id: string;
-    branch_id: string;
-    sales_order_id: string;
-    customer_id: string;
-    prepared_by_id: string;
-    cancelled_by_id: string;
-    approved_by_id: string;
     invoice_no: string;
     document_no: string;
+    prepared_by_id: number;
+    customer_id: number;
+    sales_representative: number;
     date: string;
     due_date: string;
     terms: number;
+    amount: number;
+    cancelled_by_id: number;
+    approved_by_id: number;
     is_cancelled: boolean;
     is_approved: boolean;
     remarks: string;
-    total: number;
+    payment_type: string;
 }
 
-const salesInvoice = ref({
-    id: '',
-    branch_id: '',
-    sales_order_id: '',
-    customer_id: '',
-    prepared_by_id: '',
-    sales_representative: '',
-    cancelled_by_id: '',
-    approved_by_id: '',
+interface SalesInvoiceDetail {
+    sales_invoice_id: number;
+    product_id: number;
+    product_name: string;
+    barcode: string;
+    quantity: number;
+    unit: string;
+    unit_price: number;
+    expiry_date: string;
+}
+
+interface State {
+    customers: any[];
+    employees: any[];
+    products: any[];
+    error: Error | null;
+}
+
+const state = reactive<State>({
+    customers: [],
+    employees: [],
+    products: [],
+    error: null,
+});
+
+const salesInvoice = ref<SalesInvoice>({
     invoice_no: '',
     document_no: '',
+    prepared_by_id: 0,
+    customer_id: 0,
+    sales_representative: 0,
     date: '',
     due_date: '',
-    payment_type: 'Cash',
-    terms: '0',
+    terms: 0,
+    amount: 0,
+    cancelled_by_id: 0,
+    approved_by_id: 0,
     is_cancelled: false,
     is_approved: false,
     remarks: '',
-    total: '',
+    payment_type: 'Cash',
 });
-
-interface SalesInvoiceDetail {
-    sales_invoice_id: string;
-    product_id: number | null; // Allow null
-    product_name: string;
-    barcode: string;
-    unit: string;
-    expiry_date: string;
-    quantity: number | null; // Allow null
-    price: number | null; // Allow null
-}
 
 const salesInvoiceDetail = ref<SalesInvoiceDetail>({
-    sales_invoice_id: '',
-    product_id: null, // Set to null
+    sales_invoice_id: 0,
+    product_id: 0,
     product_name: '',
     barcode: '',
+    quantity: 0,
     unit: '',
+    unit_price: 0,
     expiry_date: '',
-    quantity: null, // Set to null
-    price: null, // Set to null
 });
 
-const sales = ref<Array<SalesInvoiceDetail>>([]);
+const sales = ref<SalesInvoiceDetail[]>([]);
 
-const state = reactive({
-    error: null as Error | null,
-    isTableLoading: false,
-    customers: [] as Customer[],
-    employees: [] as Employee[],
-    products: [] as Product[],
-    salesInvoice: [] as SalesInvoice[],
-    salesInvoiceDetail: [] as any,
-    sales,
-});
-
-const totalAmount = computed(() => {
-    return sales.value.reduce((total, item) => {
-        // Use nullish coalescing to ensure values default to 0 if they are null
-        const quantity = item.quantity ?? 0; // If item.quantity is null, use 0
-        const price = item.price ?? 0; // If item.price is null, use 0
-        return total + (quantity * price); // Calculate total for each sale
-    }, 0); // Initialize total to 0
-});
-
-const formattedTotalAmount = computed(() => {
-    return `${totalAmount.value.toFixed(2)}`;
-});
-
-function redirectToSalesInvoice() {
-    navigateTo("/admin/sales_invoice");
-}
-
-function cancel() {
-    redirectToSalesInvoice();
+function addSales() {
+    if (salesInvoiceDetail.value.product_id && salesInvoiceDetail.value.quantity && salesInvoiceDetail.value.unit_price) {
+        sales.value.push({ ...salesInvoiceDetail.value });
+        // Reset the form
+        salesInvoiceDetail.value = {
+            sales_invoice_id: 0,
+            product_id: 0,
+            product_name: '',
+            barcode: '',
+            quantity: 0,
+            unit: '',
+            unit_price: 0,
+            expiry_date: '',
+        };
+    } else {
+        alert('Please fill in all required fields.');
+    }
 }
 
 function editSale(index: number) {
-    // Implement your edit logic here
+    salesInvoiceDetail.value = { ...sales.value[index] };
+    sales.value.splice(index, 1);
 }
 
 function deleteSale(index: number) {
     sales.value.splice(index, 1);
 }
 
-function addSales() {
-    sales.value.push({ ...salesInvoiceDetail.value });
-    console.log(sales);
-    salesInvoice.value.total = formattedTotalAmount.value; // Update total amount
-    resetSalesDetails();
-}
-
-async function saveSalesInvoice() {
-    try {
-        if (sales.value.length > 0) {
-            console.log('Bill before save:', salesInvoice.value);
-            const salesInvoiceData = {
-                branch_id: salesInvoice.value.branch_id,
-                sales_order_id: salesInvoice.value.sales_order_id,
-                customer_id: salesInvoice.value.customer_id,
-                prepared_by_id: user_id.value,
-                sales_representative: salesInvoice.value.sales_representative,
-                cancelled_by_id: salesInvoice.value.cancelled_by_id,
-                approved_by_id: null,
-                invoice_no: salesInvoice.value.invoice_no,
-                date: salesInvoice.value.date,
-                due_date: salesInvoice.value.due_date,
-                payment_type: salesInvoice.value.payment_type,
-                terms: salesInvoice.value.terms,
-                is_cancelled: salesInvoice.value.is_cancelled || false,
-                is_approved: salesInvoice.value.is_approved || false,
-                remarks: salesInvoice.value.remarks,
-                amount: salesInvoice.value.total,
-            };
-
-            // Update the amount in salesInvoiceData with the calculated total amount
-            salesInvoiceData.amount = formattedTotalAmount.value;
-
-            // Create new bill.
-            const response = await salesInvoiceService.createSalesInvoice(salesInvoiceData);
-            if (response && response.data.id) {
-                successAlert('Success', 'Sales Invoice has been added! The value of the ID is: ' + response.data.id);
-                successAlert('Success', 'Sales Invoice has been added! The value of the Document Reference Number is: ' + response.data.document_no);
-                console.log(response);
-                // Save bill details
-                for (const detail of sales.value) {
-                    const salesInvoiceDetailList = {
-                        sales_invoice_id: response.data.id,
-                        sales_invoice_ref_doc_no: response.data.document_no,
-                        product_id: detail.product_id, // Allow null
-                        product_name: detail.product_name,
-                        barcode: detail.barcode,
-                        unit: detail.unit,
-                        expiry_date: detail.expiry_date,
-                        quantity: detail.quantity, // Allow null
-                        price: detail.price, // Allow null
-                        bill_id: response.data.id, // Use the correct response ID
-                    };
-
-                    console.log('Saving bill detail:', salesInvoiceDetailList); // Log the detail being saved
-                    const result = await salesInvoiceDetailService.createSalesInvoiceDetail(salesInvoiceDetailList);
-
-                    if (result) {
-                        console.log('Bill detail saved successfully:', result);
-                        resetAllFields();
-                        redirectToSalesInvoice();
-                    } else {
-                        console.error('Failed to save bill detail:', salesInvoiceDetailList);
-                    }
-                }
-                successAlert(t('alert.bill_created'), t('alert.success'));
-            } else {
-                errorAlert(t('Error'), t('Failed to create bill.'));
-            }
-
-            // fetchBills(); // Refresh the bill list.
-            // toggleBillForm(); // Hide the form after save.
-        } else {
-            errorAlert(t('Error'), t('Please add at least one bill detail.'));
-        }
-    } catch (error: any) {
-        console.error('Error saving bill:', error.message);
-        errorAlert(t('Error'), t('An error occurred while saving the bill.'));
-    }
-}
-
-function resetAllFields() {
-    // Reset all fields here
-    salesInvoice.value = {
-        id: '',
-        branch_id: '',
-        sales_order_id: '',
-        customer_id: '',
-        prepared_by_id: '',
-        sales_representative: '',
-        cancelled_by_id: '',
-        approved_by_id: '',
-        invoice_no: '',
-        document_no: '',
-        date: '',
-        due_date: '',
-        payment_type: 'Cash',
-        terms: '0',
-        is_cancelled: false,
-        is_approved: false,
-        remarks: '',
-        total: '',
-    };
-
-    salesInvoiceDetail.value = {
-        sales_invoice_id: '',
-        product_id: 0,
-        product_name: '',
-        barcode: '',
-        unit: '',
-        expiry_date: '',
-        quantity: 0,
-        price: 0,
-    };
-}
-
-function resetSalesDetails() {
-    salesInvoiceDetail.value = {
-        sales_invoice_id: '',
-        product_id: 0,
-        product_name: '',
-        barcode: '',
-        unit: '',
-        expiry_date: '',
-        quantity: 0,
-        price: 0,
-    };
+function cancel() {
+    navigateTo('/admin/sales_invoice');
 }
 
 async function fetchCustomers() {
-    state.isTableLoading = true;
-    state.error = null;
     try {
         const response = await customerService.getCustomers();
-        state.customers = response.data.filter((customer: Customer) => customer.is_active); // Filter active customers
-        console.log('Fetched customers:', state.customers); // Log fetched active customers
+        state.customers = response.data;
     } catch (error: any) {
         state.error = error;
-    } finally {
-        state.isTableLoading = false;
     }
 }
 
 async function fetchEmployees() {
-    state.isTableLoading = true;
-    state.error = null;
     try {
         const response = await employeeService.getEmployees();
-        state.employees = response.data.filter((employee: Employee) => employee.is_active); // Filter active customers
-        console.log('Fetched employees:', state.employees); // Log fetched active customers
+        state.employees = response.data;
     } catch (error: any) {
         state.error = error;
-    } finally {
-        state.isTableLoading = false;
     }
 }
 
 async function fetchProducts() {
-    state.isTableLoading = true;
-    state.error = null;
     try {
         const response = await productService.getProducts();
-        state.products = response.data.filter((product: Product) => product.is_active); // Filter active customers
-        console.log('Fetched employees:', state.products); // Log fetched active customers
+        state.products = response.data;
     } catch (error: any) {
         state.error = error;
-    } finally {
-        state.isTableLoading = false;
+    }
+}
+
+async function saveSalesInvoice() {
+    try {
+        if (sales.value.length === 0) {
+            console.log('Bill before save:', salesInvoice.value);
+            alert('Please add at least one sale item.');
+            return;
+        }
+
+        // Calculate total amount
+        const totalAmount = sales.value.reduce((sum, sale) => sum + (sale.quantity * sale.unit_price), 0);
+        salesInvoice.value.amount = totalAmount;
+        salesInvoice.value.prepared_by_id = parseInt(user_id.value || '0');
+
+        // Save the sales invoice
+        const salesInvoiceResponse = await salesInvoiceService.createSalesInvoice(salesInvoice.value);
+        if (salesInvoiceResponse) {
+            console.log('Sales invoice saved successfully:', salesInvoiceResponse);
+            const salesInvoiceId = salesInvoiceResponse.id;
+
+            // Save each sales invoice detail
+            for (const salesInvoiceDetailList of sales.value) {
+                salesInvoiceDetailList.sales_invoice_id = salesInvoiceId;
+                try {
+                    console.log('Saving bill detail:', salesInvoiceDetailList); // Log the detail being saved
+                    const result = await salesInvoiceDetailService.createSalesInvoiceDetail(salesInvoiceDetailList);
+                    if (result) {
+                        console.log('Bill detail saved successfully:', result);
+                    } else {
+                        console.error('Failed to save bill detail:', salesInvoiceDetailList);
+                    }
+                } catch (detailError: any) {
+                    console.error('Error saving bill detail:', detailError.message);
+                }
+            }
+
+            alert('Sales invoice has been saved successfully!');
+            // navigateTo('/admin/sales_invoice'); // Redirect to the sales invoice list
+        } else {
+            alert('Failed to save sales invoice.');
+        }
+        // toggleBillForm(); // Hide the form after save.
+    } catch (error: any) {
+        console.error('Error saving sales invoice:', error.message);
+        alert('An error occurred while saving the sales invoice.');
     }
 }
 
@@ -593,6 +426,128 @@ watch(
         }
     }
 );
+
+// Función para imprimir la factura
+function printInvoice() {
+    try {
+        if (!salesInvoice.value.invoice_no) {
+            alert('Error: Debe guardar la factura antes de imprimirla.');
+            return;
+        }
+
+        if (sales.value.length === 0) {
+            alert('Error: No hay productos en la factura para imprimir.');
+            return;
+        }
+
+        // Crear el contenido HTML para imprimir
+        const printContent = generateInvoicePrintContent();
+        
+        // Crear una nueva ventana para imprimir
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        
+        if (!printWindow) {
+            alert('Error: No se pudo abrir la ventana de impresión. Verifique que no esté bloqueada por el navegador.');
+            return;
+        }
+
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        
+        // Esperar a que se cargue el contenido y luego imprimir
+        printWindow.onload = () => {
+            printWindow.print();
+            printWindow.close();
+        };
+        
+    } catch (error) {
+        console.error('Error al imprimir:', error);
+        alert('Error: No se pudo imprimir la factura. Verifique la configuración de su impresora.');
+    }
+}
+
+// Función para generar el contenido HTML de la factura
+function generateInvoicePrintContent() {
+    const customer = state.customers.find(c => c.id === salesInvoice.value.customer_id);
+    const salesRep = state.employees.find(e => e.id === salesInvoice.value.sales_representative);
+    
+    const total = sales.value.reduce((sum, sale) => sum + (sale.quantity * sale.unit_price), 0);
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Factura ${salesInvoice.value.invoice_no}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .invoice-info { margin-bottom: 20px; }
+                .invoice-info div { margin: 5px 0; }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                .total { text-align: right; font-weight: bold; margin-top: 20px; }
+                .footer { margin-top: 30px; text-align: center; font-size: 12px; }
+                @media print {
+                    body { margin: 0; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>FACTURA DE VENTA</h1>
+                <h2>FlexiPOS</h2>
+            </div>
+            
+            <div class="invoice-info">
+                <div><strong>Número de Factura:</strong> ${salesInvoice.value.invoice_no}</div>
+                <div><strong>Fecha:</strong> ${salesInvoice.value.date}</div>
+                <div><strong>Fecha de Vencimiento:</strong> ${salesInvoice.value.due_date}</div>
+                <div><strong>Cliente:</strong> ${customer ? customer.firstname + ' ' + customer.lastname : 'N/A'}</div>
+                <div><strong>Vendedor:</strong> ${salesRep ? salesRep.firstname + ' ' + salesRep.lastname : 'N/A'}</div>
+                <div><strong>Tipo de Pago:</strong> ${salesInvoice.value.payment_type}</div>
+                <div><strong>Términos:</strong> ${salesInvoice.value.terms} días</div>
+                <div><strong>Observaciones:</strong> ${salesInvoice.value.remarks || 'N/A'}</div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Código</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${sales.value.map(sale => `
+                        <tr>
+                            <td>${sale.product_name}</td>
+                            <td>${sale.barcode}</td>
+                            <td>${sale.quantity}</td>
+                            <td>${sale.unit}</td>
+                            <td>$${sale.unit_price.toFixed(2)}</td>
+                            <td>$${(sale.quantity * sale.unit_price).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            
+            <div class="total">
+                <h3>Total: $${total.toFixed(2)}</h3>
+            </div>
+            
+            <div class="footer">
+                <p>Gracias por su compra</p>
+                <p>Impreso el: ${new Date().toLocaleString()}</p>
+            </div>
+        </body>
+        </html>
+    `;
+}
 
 onMounted(() => {
     fetchCustomers();
