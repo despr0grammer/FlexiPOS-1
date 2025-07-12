@@ -21,11 +21,18 @@
                             class="block w-70 rounded-md border border-gray-400 shadow-sm focus:border-gray-500 focus:ring-gray-500 text-xs pl-8 pr-2 py-1.5" />
                     </div>
 
+                    <!-- User Count Display -->
+                    <div class="mt-4 sm:ml-4 sm:mt-3 flex items-center">
+                        <span class="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-md">
+                            Total Usuarios: {{ state.employees?.data?.length || 0 }}
+                        </span>
+                    </div>
+
                     <!-- Add Product Button -->
                     <div class="mt-4 sm:ml-16 sm:mt-3 sm:flex-none mr-6">
-                        <button type="button" @click="toggleForm"
+                        <button type="button" @click="handleAddEmployee"
                             class="block rounded-md bg-gray-900 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Add Employee
+                            Nuevo Usuario
                         </button>
                     </div>
                 </div>
@@ -212,6 +219,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import { employeeService } from '~/components/api/admin/EmployeeService';
+import { useUserStore } from '~/store/user';
 import type { Error } from '@/types/error';
 
 const activeInactiveOptions = [
@@ -338,7 +346,7 @@ async function saveEmployee() {
             alert(response ? 'Employee has been added!' : 'Employee creation failed!');
         }
 
-        fetchEmployees(); // Refresh the employee list.
+        await fetchEmployees(); // Refresh the employee list.
         toggleForm(); // Hide the form after save.
     } catch (error: any) {
         console.error('Error saving product:', error.message);
@@ -363,7 +371,7 @@ async function deleteEmployee(id: number) {
     try {
         const response = await employeeService.deleteEmployee(id);
         alert(response ? 'Employee has been deleted!' : 'Employee deletion failed!');
-        fetchEmployees();
+        await fetchEmployees(); // Refresh the employee list and update counter
     } catch (error: any) {
         console.error(error.message);
     }
@@ -384,6 +392,30 @@ function editEmployee(id: number) {
 
 const showForm = ref(false);
 
+// Función para manejar la validación de rol antes de agregar empleado
+function handleAddEmployee() {
+    // Verificar si el usuario actual tiene rol de "Mantención" o es Admin
+    const userStore = useUserStore();
+    const currentUser = userStore.getUser;
+    
+    if (!currentUser) {
+        alert('Error: No se pudo verificar el usuario actual.');
+        return;
+    }
+    
+    // Verificar si el usuario tiene permisos (rol Mantención, Admin o Superadmin)
+    const allowedRoles = ['Mantención', 'Admin', 'Superadmin'];
+    const userRole = currentUser.role?.name || currentUser.designation;
+    
+    if (!allowedRoles.includes(userRole)) {
+        alert('Error: No tienes permisos para crear nuevos usuarios. Se requiere rol de Mantención o superior.');
+        return;
+    }
+    
+    // Si tiene permisos, mostrar el formulario
+    toggleForm();
+}
+
 function toggleForm() {
     showForm.value = !showForm.value;
     if (!showForm.value) {
@@ -399,3 +431,4 @@ function toggleForm() {
     }
 }
 </script>
+
